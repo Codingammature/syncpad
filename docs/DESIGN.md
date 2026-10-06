@@ -99,16 +99,4 @@ Known gaps are listed in the README (revocation of live sockets, token in the We
 | Client floods messages | Socket closed with 4429; client reconnects and re-syncs. |
 | Doc deleted | `evict` published; every instance closes its sockets with 4404. |
 
-## Capacity thinking
 
-- Per doc, the cost is one in-memory `Y.Doc` per instance holding it plus fan-out to its sockets. Fan-out is O(clients) per update.
-- Instances scale connections horizontally, but a *single* very hot document is bounded by what one instance can fan out, and every instance holding it sees all its traffic over Redis. Next step would be routing each doc to one instance (consistent hashing) so peers don't all carry it.
-- Redis channel per doc via one pattern subscription is fine at moderate doc counts; at large scale you'd shard channels or move to Streams.
-
-## What I'd say in an interview
-
-- "Why not just broadcast text diffs?" → concurrent edits conflict; you need OT or a CRDT to converge.
-- "Why does the server not need to order operations?" → Yjs updates commute and are idempotent.
-- "How do you scale WebSockets, which are stateful?" → Keep state in memory per instance but make instances peers over pub/sub, so routing is stateless.
-- "What breaks if Redis drops a message?" → Divergence between instances until the next `hello`; explain the fix and the Streams alternative.
-- "How do you avoid losing data during compaction?" → Delete only the ids you folded in; compare-and-set the snapshot version.
