@@ -55,7 +55,7 @@ node load.mjs --api http://localhost:4001 --ws ws://localhost:4001,ws://localhos
 
 It reports edit-propagation latency (p50/p95/p99) and verifies **every client converged to identical content**.
 
-### Measured results (my sandbox: one small shared machine)
+### Measured results 
 
 Server instances, Redis, and all simulated clients ran on the same box, so these are conservative and not production numbers.
 
@@ -65,14 +65,9 @@ Server instances, Redis, and all simulated clients ran on the same box, so these
 | 150 | 10 × 5/s | 2 (+Redis) | 23 ms | 134 ms | 254 ms | yes |
 | 40 | 4 × 5/s | 1, through nginx | 8 ms | 39 ms | 88 ms | yes |
 
-**Run it on your own machine and use your numbers on your resume.** You'll be asked about them.
 
-## Resume bullets (fill in your own measured numbers)
 
-- Built a real-time collaborative editor (React, Node.js, WebSockets) using Yjs CRDTs for conflict-free concurrent editing, offline support, live cursors, and version history.
-- Designed a horizontally scalable sync layer: stateless server instances coordinated over Redis pub/sub behind nginx with no sticky sessions; load-tested **N** concurrent editors across 2 instances at **X ms** p95 propagation latency with verified convergence.
-- Implemented durable storage as an append-only operation log with batched writes and snapshot compaction using optimistic concurrency, preventing data loss under concurrent compaction from multiple instances.
-- Enforced role-based access (owner/editor/viewer) server-side on the WebSocket protocol; added token-bucket rate limiting; wrote integration tests covering convergence, permissions, persistence, and cross-instance sync.
+
 
 ## Layout
 
@@ -86,7 +81,7 @@ loadtest/    latency + convergence load tester
 docs/DESIGN.md   architecture, trade-offs, failure modes  <- read this before interviews
 ```
 
-## Known limitations (and what I'd do next)
+## Known limitations 
 
 - **Permission changes don't kick live sockets.** Removing a member takes effect on their next connection. Fix: publish a `revoke` bus message and close matching sockets.
 - **JWT in the WebSocket query string** (browsers can't set headers on WebSocket). It can appear in proxy logs. Fix: short-lived single-use WS tickets from a REST endpoint.
