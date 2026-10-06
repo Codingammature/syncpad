@@ -1,0 +1,31 @@
+{
+  "name": "syncpad-client",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tiptap/extension-collaboration": "^2.10.3",
+    "@tiptap/extension-collaboration-cursor": "^2.10.3",
+    "@tiptap/pm": "^2.10.3",
+    "@tiptap/react": "^2.10.3",
+    "@tiptap/starter-kit": "^2.10.3",
+    "lib0": "^0.2.98",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "y-indexeddb": "^9.0.12",
+    "y-prosemirror": "^1.2.12",
+    "y-protocols": "^1.0.6",
+    "y-websocket": "^2.0.4",
+    "yjs": "^13.6.20"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.10"
+  }
+}

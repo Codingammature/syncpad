@@ -1,0 +1,49 @@
+# One command: MongoDB + Redis + 2 server instances + nginx gateway (with the built client).
+#   docker compose up --build      ->  http://localhost:8080
+# Open two browser tabs on the same document; the status chip shows which
+# instance each tab landed on (s1 / s2). Edits still sync between them.
+services:
+  mongo:
+    image: mongo:7
+    volumes: [mongo-data:/data/db]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ping:1}).ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  server1: &server
+    build: ./server
+    environment: &server-env
+      PORT: "4000"
+      INSTANCE_ID: s1
+      MONGO_URI: mongodb://mongo:27017
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-me-before-deploying}
+    depends_on:
+      mongo: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    ports: ["4001:4000"] # direct access, handy for load tests
+
+  server2:
+    <<: *server
+    environment:
+      <<: *server-env
+      INSTANCE_ID: s2
+    ports: ["4002:4000"]
+
+  gateway:
+    build: ./client
+    depends_on: [server1, server2]
+    ports: ["8080:80"]
+
+volumes:
+  mongo-data:
